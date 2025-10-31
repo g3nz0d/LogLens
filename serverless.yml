@@ -1,0 +1,39 @@
+service: loglens-slack-app
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: us-east-1
+  timeout: 30
+  environment:
+    NODE_ENV: production
+    SLACK_BOT_TOKEN: ${env:SLACK_BOT_TOKEN}
+    SLACK_APP_TOKEN: ${env:SLACK_APP_TOKEN}
+    SLACK_SIGNING_SECRET: ${env:SLACK_SIGNING_SECRET}
+    CORALOGIX_BASE_URL: https://app.coralogix.com
+    SALESFORCE_OPP_URL: https://cyera.lightning.force.com/lightning/o/Opportunity/list?filterName=__Recent
+    BACKOFFICE_BASE_URL: https://smithy.internal.cyera.io
+    BACKOFFICE_HOME_PATH: /applications
+    BACKOFFICE_SEARCH_PATH: /search
+    BACKOFFICE_TENANT_PREFIX: /app/tenants-
+    BACKOFFICE_ACCOUNT_PREFIX: /app/accounts-
+    ACCOUNT_INDEX_PATH: ./config/accounts.csv
+
+functions:
+  app:
+    handler: dist/app.handler
+    events:
+      - schedule: rate(5 minutes)  # Keep warm
+    
+package:
+  include:
+    - dist/**
+    - config/**
+  exclude:
+    - src/**
+    - node_modules/**
+    - "*.md"
+    - "*.log"
+
+plugins:
+  - serverless-offline

@@ -1,0 +1,9 @@
+account_uid,tenant_uid,account_name,tenant_name,cloud,region,platform
+60f1b2c3d4e5f6a7b8c9d0e1,70f1b2c3d4e5f6a7b8c9d0e2,Acme Corporation,Acme Prod,AWS,us-east-1,cyera
+60f1b2c3d4e5f6a7b8c9d0e3,70f1b2c3d4e5f6a7b8c9d0e4,TechCorp Industries,TechCorp Staging,Azure,eastus,cyera
+60f1b2c3d4e5f6a7b8c9d0e5,70f1b2c3d4e5f6a7b8c9d0e6,GlobalBank Ltd,GlobalBank Dev,GCP,us-central1,cyera
+60f1b2c3d4e5f6a7b8c9d0e7,70f1b2c3d4e5f6a7b8c9d0e8,StartupXYZ,StartupXYZ Production,AWS,us-west-2,cyera
+60f1b2c3d4e5f6a7b8c9d0e9,70f1b2c3d4e5f6a7b8c9d0ea,MegaCorp,MegaCorp EMEA,Azure,westeurope,cyera
+a1b2c3d4e5f6a7b8c9d0e1f2,b2c3d4e5f6a7b8c9d0e1f2a3,FinanceFirst,FinanceFirst Prod,AWS,eu-west-1,cyera
+c3d4e5f6a7b8c9d0e1f2a3b4,d4e5f6a7b8c9d0e1f2a3b4c5,RetailGiant,RetailGiant Main,GCP,europe-west1,cyera
+e5f6a7b8c9d0e1f2a3b4c5d6,f6a7b8c9d0e1f2a3b4c5d6e7,HealthTech Solutions,HealthTech Prod,Azure,canadacentral,cyera
