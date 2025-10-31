@@ -6,10 +6,9 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "start": "npm run build && node dist/app.js",
+    "start": "node dist/app.js",
     "dev": "tsx src/app.ts",
-    "watch": "tsx watch src/app.ts",
-    "postinstall": "npm run build"
+    "watch": "tsx watch src/app.ts"
   },
   "keywords": ["slack", "logs", "coralogix", "alerts"],
   "author": "",
