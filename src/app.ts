@@ -13,6 +13,7 @@ import {
   // linkSimilarIncidents,
   // linkRecentChanges,
 } from './coralogix.js';
+import { zendeskUrl, zendeskButtonText } from './zendesk.js';
 
 const { App, LogLevel } = Bolt;
 
@@ -180,6 +181,8 @@ type ChannelMapping = {
   salesforce_account_id?: string;
   backoffice_tenant_path?: string;
   coralogix_team?: string;
+  zendesk_organization_id?: string;
+  zendesk_organization_name?: string;
 };
 
 const splitCSV = (line: string) => line.split(',').map(s => s.trim());
@@ -261,7 +264,9 @@ const getChannelMapping = (channelId: string): ChannelMapping => {
     account_uid: undefined,
     salesforce_account_id: undefined,
     backoffice_tenant_path: undefined,
-    coralogix_team: undefined
+    coralogix_team: undefined,
+    zendesk_organization_id: undefined,
+    zendesk_organization_name: undefined
   };
 };
 
@@ -297,7 +302,12 @@ function buildCard(r: ReturnType<typeof extractFields>, originalText: string = '
   const boUrl = bo.deepTenant || bo.deepAccount || bo.search1 || bo.search2 || bo.home;
   const boBtn = safeButton('BackOffice', boUrl);
 
-  const actions = [openLogsBtn, sfBtn, boBtn].filter(Boolean) as any[];
+  // 4) Zendesk - Direct ticket or organization tickets
+  const zendeskButtonLabel = zendeskButtonText(f, channelMapping);
+  const zendeskUrl_result = zendeskUrl(f, channelMapping);
+  const zendeskBtn = safeButton(zendeskButtonLabel, zendeskUrl_result);
+
+  const actions = [openLogsBtn, sfBtn, boBtn, zendeskBtn].filter(Boolean) as any[];
 
   const blocks: any[] = [
     { type: 'header', text: { type: 'plain_text', text: `LogLens – ${channelMapping?.client_name || 'Alert Analysis'}` } },

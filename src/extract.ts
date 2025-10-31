@@ -109,6 +109,28 @@ export function extractFields(text: string): ExtractedResult {
       /(?:error[_\s]*type|exception)[:\s]*([^\n\r,;]+)/i,
       /"error"[:\s]*"([^"]+)"/i,
       /exception[:\s]*([^\n\r,;]+)/i
+    ],
+    // Zendesk-specific fields
+    ticket_id: [
+      /(?:ticket[_\s]*id|zendesk[_\s]*ticket)[:\s]*([0-9]+)/i,
+      /"ticket_id"[:\s]*"([^"]+)"/i,
+      /ticket[_\s]*#([0-9]+)/i,
+      /\#([0-9]{6,})/i
+    ],
+    requester_email: [
+      /(?:requester|from|email)[:\s]*([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/i,
+      /"email"[:\s]*"([^"]+)"/i,
+      /reported[_\s]*by[:\s]*([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/i
+    ],
+    requester_name: [
+      /(?:requester[_\s]*name|reported[_\s]*by|from)[:\s]*([^\n\r,;@]+)(?:\s*<|$)/i,
+      /"requester"[:\s]*"([^"]+)"/i,
+      /user[:\s]*([^\n\r,;@]+)/i
+    ],
+    organization: [
+      /(?:organization|org|company)[:\s]*([^\n\r,;]+)/i,
+      /"organization"[:\s]*"([^"]+)"/i,
+      /\bcompany[:\s]*([^\n\r,;]+)/i
     ]
   };
 
