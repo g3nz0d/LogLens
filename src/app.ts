@@ -290,12 +290,12 @@ function buildCard(r: ReturnType<typeof extractFields>, originalText: string = '
   // 1) Open Logs (Coralogix) - Enhanced with channel mapping
   const timeRange = f.severity?.toLowerCase().includes('critical') ? 240 : 120; // 4h for critical, 2h for others
   const openLogsBtn = safeButton(
-    `Open Logs (${timeRange/60}h)`, 
+    'Logs',
     linkOpenLogs(f, timeRange, channelMapping)
   );
 
   // 2) Salesforce - Direct to case/account or search
-  const sfBtn = safeButton('Salesforce', salesforceUrl(f, channelMapping));
+  const sfBtn = safeButton('SalesForce', salesforceUrl(f, channelMapping));
 
   // 3) BackOffice - Direct tenant link or smart fallback  
   const bo = resolveBackOfficeUrls(f, channelMapping);
@@ -303,9 +303,8 @@ function buildCard(r: ReturnType<typeof extractFields>, originalText: string = '
   const boBtn = safeButton('BackOffice', boUrl);
 
   // 4) Zendesk - Direct ticket or organization tickets
-  const zendeskButtonLabel = zendeskButtonText(f, channelMapping);
   const zendeskUrl_result = zendeskUrl(f, channelMapping);
-  const zendeskBtn = safeButton(zendeskButtonLabel, zendeskUrl_result);
+  const zendeskBtn = safeButton('ZenDesk', zendeskUrl_result);
 
   const actions = [openLogsBtn, sfBtn, boBtn, zendeskBtn].filter(Boolean) as any[];
 
