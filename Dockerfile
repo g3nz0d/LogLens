@@ -1,13 +1,18 @@
 FROM node:18-alpine
 
+# Install system dependencies for node-gyp and build tools
+RUN apk add --no-cache python3 make g++
+
 # Set working directory
 WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
+COPY .npmrc ./
 
-# Install dependencies
-RUN npm install
+# Clean npm cache and install dependencies
+RUN npm cache clean --force
+RUN npm install --production=false --verbose
 
 # Copy source code
 COPY . .
@@ -26,9 +31,7 @@ USER nodejs
 # Expose port (though not needed for Slack Socket Mode)
 EXPOSE 3000
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node -e "console.log('Health check passed')" || exit 1
+# No health check needed for Slack Socket Mode app
 
 # Start the application
 CMD ["npm", "start"]
