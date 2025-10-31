@@ -1,5 +1,5 @@
 // src/app.ts
-console.log('[LogLens] booting at', new Date().toISOString());
+console.log('[LogLens] booting at', new Date().toISOString(), '- v1.1.0 with 5-button layout');
 
 import 'dotenv/config';
 import fs from 'node:fs';
@@ -314,11 +314,19 @@ function buildCard(r: ReturnType<typeof extractFields>, originalText: string = '
   const zendeskBtn = safeButton('ZenDesk', zendeskUrl_result);
 
   // 5) Trace - Alert origin and correlation tracking
-  const traceButtonLabel = traceButtonText(f);
-  const traceUrl_result = traceUrl(f, channelMapping);
-  const traceBtn = safeButton(traceButtonLabel, traceUrl_result);
+  let traceBtn;
+  try {
+    const traceButtonLabel = traceButtonText(f);
+    const traceUrl_result = traceUrl(f, channelMapping);
+    traceBtn = safeButton(traceButtonLabel, traceUrl_result);
+    console.log('[LogLens] Trace button created:', traceButtonLabel);
+  } catch (e) {
+    console.error('[LogLens] Trace button error:', e);
+    traceBtn = safeButton('Trace', '#'); // Fallback button
+  }
 
   const actions = [openLogsBtn, sfBtn, boBtn, zendeskBtn, traceBtn].filter(Boolean) as any[];
+  console.log('[LogLens] Total buttons created:', actions.length);
 
   const blocks: any[] = [
     { type: 'header', text: { type: 'plain_text', text: `LogLens – ${channelMapping?.client_name || 'Alert Analysis'}` } },
