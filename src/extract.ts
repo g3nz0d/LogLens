@@ -131,6 +131,27 @@ export function extractFields(text: string): ExtractedResult {
       /(?:organization|org|company)[:\s]*([^\n\r,;]+)/i,
       /"organization"[:\s]*"([^"]+)"/i,
       /\bcompany[:\s]*([^\n\r,;]+)/i
+    ],
+    // Tracing and correlation fields
+    correlation_id: [
+      /(?:correlation[_\s]*id|trace[_\s]*id|request[_\s]*id)[:\s]*([A-Za-z0-9\-_]+)/i,
+      /"correlation_id"[:\s]*"([^"]+)"/i,
+      /x-correlation-id[:\s]*([A-Za-z0-9\-_]+)/i
+    ],
+    transaction_id: [
+      /(?:transaction[_\s]*id|txn[_\s]*id|session[_\s]*id)[:\s]*([A-Za-z0-9\-_]+)/i,
+      /"transaction_id"[:\s]*"([^"]+)"/i,
+      /txn[:\s]*([A-Za-z0-9\-_]+)/i
+    ],
+    job_id: [
+      /(?:job[_\s]*id|batch[_\s]*id|workflow[_\s]*id)[:\s]*([A-Za-z0-9\-_]+)/i,
+      /"job_id"[:\s]*"([^"]+)"/i,
+      /job[:\s]*([A-Za-z0-9\-_]+)/i
+    ],
+    alert_source: [
+      /(?:source|origin|from)[:\s]*([A-Za-z0-9\-_]+)/i,
+      /"source"[:\s]*"([^"]+)"/i,
+      /generated[_\s]*by[:\s]*([A-Za-z0-9\-_]+)/i
     ]
   };
 

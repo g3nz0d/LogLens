@@ -14,6 +14,7 @@ import {
   // linkRecentChanges,
 } from './coralogix.js';
 import { zendeskUrl, zendeskButtonText } from './zendesk.js';
+import { traceUrl, traceButtonText } from './trace.js';
 
 const { App, LogLevel } = Bolt;
 
@@ -183,6 +184,9 @@ type ChannelMapping = {
   coralogix_team?: string;
   zendesk_organization_id?: string;
   zendesk_organization_name?: string;
+  trace_system?: string;
+  datadog_org?: string;
+  grafana_org?: string;
 };
 
 const splitCSV = (line: string) => line.split(',').map(s => s.trim());
@@ -266,7 +270,10 @@ const getChannelMapping = (channelId: string): ChannelMapping => {
     backoffice_tenant_path: undefined,
     coralogix_team: undefined,
     zendesk_organization_id: undefined,
-    zendesk_organization_name: undefined
+    zendesk_organization_name: undefined,
+    trace_system: undefined,
+    datadog_org: undefined,
+    grafana_org: undefined
   };
 };
 
@@ -306,7 +313,12 @@ function buildCard(r: ReturnType<typeof extractFields>, originalText: string = '
   const zendeskUrl_result = zendeskUrl(f, channelMapping);
   const zendeskBtn = safeButton('ZenDesk', zendeskUrl_result);
 
-  const actions = [openLogsBtn, sfBtn, boBtn, zendeskBtn].filter(Boolean) as any[];
+  // 5) Trace - Alert origin and correlation tracking
+  const traceButtonLabel = traceButtonText(f);
+  const traceUrl_result = traceUrl(f, channelMapping);
+  const traceBtn = safeButton(traceButtonLabel, traceUrl_result);
+
+  const actions = [openLogsBtn, sfBtn, boBtn, zendeskBtn, traceBtn].filter(Boolean) as any[];
 
   const blocks: any[] = [
     { type: 'header', text: { type: 'plain_text', text: `LogLens – ${channelMapping?.client_name || 'Alert Analysis'}` } },

@@ -8,7 +8,9 @@
       "backoffice_tenant_path": "/app/tenants-60f1b2c3d4e5f6a7b8c9d0e1",
       "coralogix_team": "acme-prod",
       "zendesk_organization_id": "12345678",
-      "zendesk_organization_name": "Acme Corporation"
+      "zendesk_organization_name": "Acme Corporation",
+      "trace_system": "datadog",
+      "datadog_org": "acme-corp"
     },
     "C2345678901": {
       "client_name": "TechCorp Industries", 
@@ -18,7 +20,9 @@
       "backoffice_tenant_path": "/app/tenants-60f1b2c3d4e5f6a7b8c9d0e3",
       "coralogix_team": "techcorp-staging",
       "zendesk_organization_id": "87654321",
-      "zendesk_organization_name": "TechCorp Industries"
+      "zendesk_organization_name": "TechCorp Industries",
+      "trace_system": "grafana",
+      "grafana_org": "techcorp"
     }
   },
   "default_mapping": {
@@ -29,6 +33,9 @@
     "backoffice_tenant_path": null,
     "coralogix_team": null,
     "zendesk_organization_id": null,
-    "zendesk_organization_name": null
+    "zendesk_organization_name": null,
+    "trace_system": null,
+    "datadog_org": null,
+    "grafana_org": null
   }
 }
