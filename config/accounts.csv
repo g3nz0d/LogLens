@@ -1,3 +1,4 @@
 account_uid,tenant_uid,account_name,tenant_name,cloud,region,platform
 60f1b2c3d4e5f6a7b8c9d0e1,70f1b2c3d4e5f6a7b8c9d0e2,Example Corp,Example Tenant,AWS,us-east-1,cyera
 60f1b2c3d4e5f6a7b8c9d0e3,70f1b2c3d4e5f6a7b8c9d0e4,Demo Company,Demo Tenant,Azure,eastus,cyera
+c670d246-8a9b-472f-badf-4c1ee5c73831,c670d246-8a9b-472f-badf-4c1ee5c73831,Seismic,Seismic Prod,AWS,us-east-1,cyera

@@ -9,7 +9,8 @@ export function linkOpenLogs(
   timeRangeMinutes = 120,
   channelMapping?: { coralogix_team?: string; client_name?: string }
 ): string {
-  const baseUrl = process.env.CORALOGIX_BASE_URL || 'https://app.coralogix.com';
+  // Use Cyera-specific Coralogix instance
+  const baseUrl = process.env.CORALOGIX_BASE_URL || 'https://cyeraio.coralogix.com';
   
   // Build query filters with priority order
   const filters: string[] = [];

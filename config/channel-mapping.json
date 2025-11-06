@@ -25,6 +25,18 @@
       "grafana_org": "techcorp"
     }
   },
+  "C09KPNV85QS": {
+    "client_name": "Seismic",
+    "tenant_uid": "c670d246-8a9b-472f-badf-4c1ee5c73831",
+    "account_uid": "c670d246-8a9b-472f-badf-4c1ee5c73831",
+    "salesforce_account_id": "006VN00000ESTewYAH",
+    "backoffice_tenant_path": "/app/backoffice/single-tenant-6653054cdb703418c650204f?branch=main&tenantId=c670d246-8a9b-472f-badf-4c1ee5c73831",
+    "coralogix_team": "seismic-prod",
+    "zendesk_organization_id": "29506361719063",
+    "zendesk_organization_name": "Seismic",
+    "trace_system": "apoyo",
+    "datadog_org": "seismic"
+  },
   "default_mapping": {
     "client_name": "Unknown Client",
     "tenant_uid": null,
