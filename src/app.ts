@@ -392,25 +392,25 @@ async function buildCard(r: ReturnType<typeof extractFields>, originalText: stri
     demoMode: channelId === 'C09KPNV85QS'
   });
 
-  // Build action buttons with default styling (white background, black text)
+  // Build action buttons with primary styling (professional green appearance)
   const timeRange = f.severity?.toLowerCase().includes('critical') ? 240 : 120;
-  const openLogsBtn = safeButton('Logs', linkOpenLogs(f, timeRange, channelMapping));
-  const sfBtn = safeButton('SalesForce', salesforceUrl(f, channelMapping));
+  const openLogsBtn = safeButton('Logs', linkOpenLogs(f, timeRange, channelMapping), 'primary');
+  const sfBtn = safeButton('SalesForce', salesforceUrl(f, channelMapping), 'primary');
   const bo = resolveBackOfficeUrls(f, channelMapping);
   const boUrl = bo.deepTenant || bo.deepAccount || bo.search1 || bo.search2 || bo.home;
-  const boBtn = safeButton('BackOffice', boUrl);
+  const boBtn = safeButton('BackOffice', boUrl, 'primary');
   const zendeskUrl_result = zendeskUrl(f, channelMapping);
-  const zendeskBtn = safeButton('ZenDesk', zendeskUrl_result);
+  const zendeskBtn = safeButton('ZenDesk', zendeskUrl_result, 'primary');
 
   let traceBtn;
   try {
     const traceButtonLabel = traceButtonText(f);
     const traceUrl_result = traceUrl(f, channelMapping);
-    traceBtn = safeButton(traceButtonLabel, traceUrl_result);
+    traceBtn = safeButton(traceButtonLabel, traceUrl_result, 'primary');
     console.log('[LogLens] Trace button created:', traceButtonLabel);
   } catch (e) {
     console.error('[LogLens] Trace button error:', e);
-    traceBtn = safeButton('Trace', '#');
+    traceBtn = safeButton('Trace', '#', 'primary');
   }
 
   const actions = [openLogsBtn, sfBtn, boBtn, zendeskBtn, traceBtn].filter(Boolean) as any[];
