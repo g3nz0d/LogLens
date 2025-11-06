@@ -7,8 +7,19 @@
 export function linkOpenLogs(
   fields: Record<string, string>, 
   timeRangeMinutes = 120,
-  channelMapping?: { coralogix_team?: string; client_name?: string }
+  channelMapping?: { 
+    coralogix_team?: string; 
+    client_name?: string;
+    coralogix_saved_query_url?: string;
+  }
 ): string {
+  // 1. HIGHEST PRIORITY: Use saved query URL if configured for this channel
+  if (channelMapping?.coralogix_saved_query_url) {
+    console.log('[LogLens] Using saved Coralogix query:', channelMapping.coralogix_saved_query_url);
+    return channelMapping.coralogix_saved_query_url;
+  }
+
+  // 2. Fallback to dynamic query generation
   // Use Cyera-specific Coralogix instance
   const baseUrl = process.env.CORALOGIX_BASE_URL || 'https://cyeraio.coralogix.com';
   
