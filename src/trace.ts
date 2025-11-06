@@ -330,12 +330,22 @@ export function getTraceAnalysis(
     };
   }
 
-  // Low confidence - general correlation
+  // Low confidence - enhanced correlation with available context
+  const contextFields = [];
+  if (fields.tenant_uid) contextFields.push('tenant context');
+  if (fields.service_name) contextFields.push('service scope');
+  if (fields.error_type) contextFields.push('error patterns');
+  if (fields.timestamp) contextFields.push('temporal correlation');
+  
+  const contextDescription = contextFields.length > 0 
+    ? `using ${contextFields.join(', ')}` 
+    : 'with available alert metadata';
+    
   return {
-    detection: `No specific trace identifiers found`,
-    routing: 'Enhanced Coralogix correlation search',
+    detection: `No direct trace IDs found, but ${availableFields.length} contextual fields available for correlation`,
+    routing: `Multi-dimensional Coralogix search ${contextDescription}`,
     confidence: 'low',
     available_fields: availableFields,
-    recommended_action: 'Opens broad correlation search based on tenant/service context'
+    recommended_action: `Opens intelligent correlation search across tenant ${fields.tenant_uid ? fields.tenant_uid.substring(0, 8) + '...' : 'context'}, service patterns, and temporal relationships for comprehensive trace discovery`
   };
 }
