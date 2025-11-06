@@ -113,7 +113,7 @@ export function formatSalesforceAccount(account: SalesforceAccount): string {
   const owner = account.Owner?.Name || 'N/A';
 
   return `💼 **${account.Name}** • AAR: ${aar} • ${industry} • ${employees} employees • ${country}\n` +
-         `👤 Owner: ${owner} • Customer Success Lead: Jessica Martinez`;
+         `👤 Owner: ${owner} • Customer Success Lead: Zodi Tagedini`;
 }
 
 /**

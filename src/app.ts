@@ -373,16 +373,16 @@ async function buildCard(r: ReturnType<typeof extractFields>, originalText: stri
       overall_status: 'warning'
     };
     
-    // Hardcoded Salesforce account for demo
+    // Hardcoded Salesforce account for demo (real data from Salesforce)
     salesforceAccount = {
       Id: '006VN00000LXtEZYA1',
       Name: 'Seismic',
-      AnnualRevenue: 3200000, // $3.2M
+      AnnualRevenue: 50000, // $50K from screenshot (New ARR field)
       Industry: 'Technology',
       Type: 'Customer - Direct',
       NumberOfEmployees: 8500,
       BillingCountry: 'United States',
-      Owner: { Name: 'Sarah Johnson' }
+      Owner: { Name: 'Khadejah Nazir' } // Real opportunity owner from screenshot
     };
   }
   
