@@ -54,9 +54,21 @@ function blocksToText(msg: any): string {
   return [base, out.join('\n')].filter(Boolean).join('\n');
 }
 
-function safeButton(text: string, url?: string | null) {
+function safeButton(text: string, url?: string | null, style?: 'primary' | 'danger') {
   if (!isUrl(url || '')) return null;
-  return { type: 'button' as const, text: { type: 'plain_text' as const, text }, url: url! };
+  
+  const button: any = { 
+    type: 'button' as const, 
+    text: { type: 'plain_text' as const, text }, 
+    url: url!
+  };
+  
+  // Add custom styling for better visual appeal
+  if (style) {
+    button.style = style;
+  }
+  
+  return button;
 }
 
 /* ------------------------------------------------------------------ *
@@ -380,25 +392,25 @@ async function buildCard(r: ReturnType<typeof extractFields>, originalText: stri
     demoMode: channelId === 'C09KPNV85QS'
   });
 
-  // Build action buttons
+  // Build action buttons with primary styling (green hover effect)
   const timeRange = f.severity?.toLowerCase().includes('critical') ? 240 : 120;
-  const openLogsBtn = safeButton('Logs', linkOpenLogs(f, timeRange, channelMapping));
-  const sfBtn = safeButton('SalesForce', salesforceUrl(f, channelMapping));
+  const openLogsBtn = safeButton('Logs', linkOpenLogs(f, timeRange, channelMapping), 'primary');
+  const sfBtn = safeButton('SalesForce', salesforceUrl(f, channelMapping), 'primary');
   const bo = resolveBackOfficeUrls(f, channelMapping);
   const boUrl = bo.deepTenant || bo.deepAccount || bo.search1 || bo.search2 || bo.home;
-  const boBtn = safeButton('BackOffice', boUrl);
+  const boBtn = safeButton('BackOffice', boUrl, 'primary');
   const zendeskUrl_result = zendeskUrl(f, channelMapping);
-  const zendeskBtn = safeButton('ZenDesk', zendeskUrl_result);
+  const zendeskBtn = safeButton('ZenDesk', zendeskUrl_result, 'primary');
 
   let traceBtn;
   try {
     const traceButtonLabel = traceButtonText(f);
     const traceUrl_result = traceUrl(f, channelMapping);
-    traceBtn = safeButton(traceButtonLabel, traceUrl_result);
+    traceBtn = safeButton(traceButtonLabel, traceUrl_result, 'primary');
     console.log('[LogLens] Trace button created:', traceButtonLabel);
   } catch (e) {
     console.error('[LogLens] Trace button error:', e);
-    traceBtn = safeButton('Trace', '#');
+    traceBtn = safeButton('Trace', '#', 'primary');
   }
 
   const actions = [openLogsBtn, sfBtn, boBtn, zendeskBtn, traceBtn].filter(Boolean) as any[];
