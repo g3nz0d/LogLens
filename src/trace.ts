@@ -269,3 +269,73 @@ export function traceButtonText(fields: Record<string, string>): string {
   
   return 'Trace Origin';
 }
+
+/**
+ * Get detailed trace analysis for debugging and transparency
+ */
+export function getTraceAnalysis(
+  fields: Record<string, string>,
+  channelMapping?: { trace_system?: string; client_name?: string }
+): {
+  detection: string;
+  routing: string;
+  confidence: 'high' | 'medium' | 'low';
+  available_fields: string[];
+  recommended_action: string;
+} {
+  const availableFields = Object.keys(fields).filter(k => fields[k]);
+
+  // High confidence - direct correlation
+  if (fields.correlation_id || fields.transaction_id) {
+    return {
+      detection: `Found correlation ID: ${fields.correlation_id || fields.transaction_id}`,
+      routing: 'Coralogix 6-hour correlation timeline',
+      confidence: 'high',
+      available_fields: availableFields,
+      recommended_action: 'Opens detailed trace correlation in Coralogix with extended timeline'
+    };
+  }
+
+  // High confidence - specific system
+  if (fields.alert_source) {
+    const source = fields.alert_source.toLowerCase();
+    let routingSystem = source.charAt(0).toUpperCase() + source.slice(1);
+    let action = `Opens ${source} specific tracing interface`;
+
+    if (source === 'apoyo' || source === 'apo-yo') {
+      routingSystem = fields.service_name === 'inventory' ? 'ApoYo Inventory Scan' : 'ApoYo System';
+      action = fields.service_name === 'inventory' ? 'Opens ApoYo inventory scan status dashboard' : 'Opens ApoYo job execution timeline';
+    } else if (source === 'licensing center' || source === 'licensing-center') {
+      routingSystem = 'Licensing Center';
+      action = 'Opens license utilization dashboard';
+    }
+
+    return {
+      detection: `Detected alert source: ${fields.alert_source}`,
+      routing: routingSystem,
+      confidence: 'high',
+      available_fields: availableFields,
+      recommended_action: action
+    };
+  }
+
+  // Medium confidence - job/workflow tracking
+  if (fields.job_id) {
+    return {
+      detection: `Found job ID: ${fields.job_id}`,
+      routing: 'Multi-system job tracking',
+      confidence: 'medium',
+      available_fields: availableFields,
+      recommended_action: 'Searches across systems for job execution timeline'
+    };
+  }
+
+  // Low confidence - general correlation
+  return {
+    detection: `No specific trace identifiers found`,
+    routing: 'Enhanced Coralogix correlation search',
+    confidence: 'low',
+    available_fields: availableFields,
+    recommended_action: 'Opens broad correlation search based on tenant/service context'
+  };
+}
