@@ -12,7 +12,7 @@ export function zendeskUrl(
     client_name?: string;
   }
 ): string {
-  const baseUrl = process.env.ZENDESK_BASE_URL || 'https://cyera.zendesk.com';
+  const baseUrl = process.env.ZENDESK_BASE_URL || 'https://cyerahelp.zendesk.com';
   const orgPath = process.env.ZENDESK_ORG_PATH || '/agent/organizations';
   const ticketPath = process.env.ZENDESK_TICKET_PATH || '/agent/tickets';
   const searchPath = process.env.ZENDESK_SEARCH_PATH || '/agent/search/1';
@@ -67,7 +67,7 @@ export function zendeskUrl(
  * Generate a Zendesk organization overview URL
  */
 export function zendeskOrganizationUrl(channelMapping?: { zendesk_organization_id?: string }): string {
-  const baseUrl = process.env.ZENDESK_BASE_URL || 'https://cyera.zendesk.com';
+  const baseUrl = process.env.ZENDESK_BASE_URL || 'https://cyerahelp.zendesk.com';
   const orgPath = process.env.ZENDESK_ORG_PATH || '/agent/organizations';
 
   if (channelMapping?.zendesk_organization_id) {
