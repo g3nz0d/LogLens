@@ -1,5 +1,6 @@
 // src/app.ts
-console.log('[LogLens] booting at', new Date().toISOString(), '- v1.1.0 with 5-button layout');
+console.log('[LogLens] booting at', new Date().toISOString(), '- v1.2.0 ENHANCED with LICENSING + SALESFORCE + TRACE + ZENDESK');
+console.log('[LogLens] ALL ENHANCEMENTS LOADED: licensing.js, salesforce.js, trace.js, zendesk.js');
 
 import 'dotenv/config';
 import fs from 'node:fs';
@@ -14,7 +15,9 @@ import {
   // linkRecentChanges,
 } from './coralogix.js';
 import { zendeskUrl, zendeskButtonText } from './zendesk.js';
-import { traceUrl, traceButtonText } from './trace.js';
+import { traceUrl, traceButtonText, getTraceAnalysis } from './trace.js';
+import { getLicenseStatus, formatLicenseStatus, getLicenseDashboardUrl } from './licensing.js';
+import { getSalesforceAccountDetails, formatSalesforceAccount, getAccountTier } from './salesforce.js';
 
 const { App, LogLevel } = Bolt;
 
@@ -287,33 +290,106 @@ loadChannelMappings();
 /* ------------------------------------------------------------------ *
  * Enhanced LogLens card with UID extraction included
  * ------------------------------------------------------------------ */
-function buildCard(r: ReturnType<typeof extractFields>, originalText: string = '', channelId?: string) {
+async function buildCard(r: ReturnType<typeof extractFields>, originalText: string = '', channelId?: string) {
+  console.log('[LogLens] buildCard v1.2.0 called with FULL ENHANCEMENTS');
+  console.log('[LogLens] DEBUG - Channel ID received:', channelId);
+  
   const f: Record<string, string> = r.fields as any;
   const channelMapping = channelId ? getChannelMapping(channelId) : undefined;
+  console.log('[LogLens] DEBUG - Channel mapping result:', channelMapping?.client_name || 'Unknown', 'for channel:', channelId);
 
   // Extract UIDs from the original text
   const uids = extractUIDs(originalText);
+
+  // Fetch enrichment data in parallel
+  const enrichmentPromises: Promise<any>[] = [];
   
-  // 1) Open Logs (Coralogix) - Enhanced with channel mapping
-  const timeRange = f.severity?.toLowerCase().includes('critical') ? 240 : 120; // 4h for critical, 2h for others
-  const openLogsBtn = safeButton(
-    'Logs',
-    linkOpenLogs(f, timeRange, channelMapping)
+  // Always try to get licensing status for primary tenant/account
+  const primaryTenantUid = f.tenant_uid || channelMapping?.tenant_uid;
+  const primaryAccountUid = f.account_uid || channelMapping?.account_uid;
+  const primaryTenantName = f.tenant_name || f.account_name || channelMapping?.client_name;
+  
+  if (primaryTenantUid || primaryAccountUid || primaryTenantName) {
+    enrichmentPromises.push(
+      getLicenseStatus(primaryTenantUid, primaryAccountUid, primaryTenantName)
+    );
+  } else {
+    enrichmentPromises.push(Promise.resolve(null));
+  }
+  
+  // Always try to get Salesforce AAR for mapped accounts
+  if (channelMapping?.salesforce_account_id) {
+    enrichmentPromises.push(
+      getSalesforceAccountDetails(channelMapping.salesforce_account_id)
+    );
+  } else {
+    enrichmentPromises.push(Promise.resolve(null));
+  }
+
+  // Wait for enrichment data (with timeout)
+  console.log('[LogLens] Starting enrichment APIs...', enrichmentPromises.length, 'calls');
+  let [licenseStatus, salesforceAccount] = await Promise.allSettled(
+    enrichmentPromises.map(p => Promise.race([
+      p,
+      new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000))
+    ]))
+  ).then(results => 
+    results.map(result => result.status === 'fulfilled' ? result.value : null)
   );
+  
+  // DEMO MODE: Add hardcoded data for demo channel
+  if (channelId === 'C09KPNV85QS' || channelMapping?.client_name === 'Seismic') {
+    console.log('[LogLens] DEMO MODE: Using hardcoded enrichment data');
+    
+    // Hardcoded licensing data for demo
+    licenseStatus = {
+      tenant_name: 'Seismic',
+      saas: {
+        licenses_used: 1250,
+        licenses_total: 1500,
+        utilization_percent: 83,
+        status: 'healthy',
+        days_to_renewal: 45
+      },
+      iaas: {
+        licenses_used: 920,
+        licenses_total: 1000,
+        utilization_percent: 92,
+        status: 'warning',
+        days_to_renewal: 45
+      },
+      overall_status: 'warning'
+    };
+    
+    // Hardcoded Salesforce account for demo
+    salesforceAccount = {
+      Id: '006VN00000LXtEZYA1',
+      Name: 'Seismic',
+      AnnualRevenue: 3200000, // $3.2M
+      Industry: 'Technology',
+      Type: 'Customer - Direct',
+      NumberOfEmployees: 8500,
+      BillingCountry: 'United States',
+      Owner: { Name: 'Sarah Johnson' }
+    };
+  }
+  
+  console.log('[LogLens] Enrichment complete:', { 
+    licenseStatus: licenseStatus ? 'SUCCESS' : 'NULL', 
+    salesforceAccount: salesforceAccount ? 'SUCCESS' : 'NULL',
+    demoMode: channelId === 'C09KPNV85QS'
+  });
 
-  // 2) Salesforce - Direct to case/account or search
+  // Build action buttons
+  const timeRange = f.severity?.toLowerCase().includes('critical') ? 240 : 120;
+  const openLogsBtn = safeButton('Logs', linkOpenLogs(f, timeRange, channelMapping));
   const sfBtn = safeButton('SalesForce', salesforceUrl(f, channelMapping));
-
-  // 3) BackOffice - Direct tenant link or smart fallback  
   const bo = resolveBackOfficeUrls(f, channelMapping);
   const boUrl = bo.deepTenant || bo.deepAccount || bo.search1 || bo.search2 || bo.home;
   const boBtn = safeButton('BackOffice', boUrl);
-
-  // 4) Zendesk - Direct ticket or organization tickets
   const zendeskUrl_result = zendeskUrl(f, channelMapping);
   const zendeskBtn = safeButton('ZenDesk', zendeskUrl_result);
 
-  // 5) Trace - Alert origin and correlation tracking
   let traceBtn;
   try {
     const traceButtonLabel = traceButtonText(f);
@@ -322,14 +398,21 @@ function buildCard(r: ReturnType<typeof extractFields>, originalText: string = '
     console.log('[LogLens] Trace button created:', traceButtonLabel);
   } catch (e) {
     console.error('[LogLens] Trace button error:', e);
-    traceBtn = safeButton('Trace', '#'); // Fallback button
+    traceBtn = safeButton('Trace', '#');
   }
 
   const actions = [openLogsBtn, sfBtn, boBtn, zendeskBtn, traceBtn].filter(Boolean) as any[];
   console.log('[LogLens] Total buttons created:', actions.length);
 
+  // Build header with account tier if available
+  let headerText = `LogLens – ${channelMapping?.client_name || 'Alert Analysis'}`;
+  if (salesforceAccount) {
+    const accountTier = getAccountTier(salesforceAccount.AnnualRevenue);
+    headerText += ` (${accountTier})`;
+  }
+
   const blocks: any[] = [
-    { type: 'header', text: { type: 'plain_text', text: `LogLens – ${channelMapping?.client_name || 'Alert Analysis'}` } },
+    { type: 'header', text: { type: 'plain_text', text: headerText } },
     {
       type: 'section',
       text: {
@@ -337,7 +420,6 @@ function buildCard(r: ReturnType<typeof extractFields>, originalText: string = '
         text:
           `*Alert Type:* ${r.family}  •  *Fields Found:* ${Object.keys(f).length}\n` +
           `${Object.entries(f).map(([k, v]) => {
-            // Highlight specific IDs that enable direct linking
             const isSpecialId = ['case_id', 'incident_id', 'alert_id', 'tenant_uid', 'account_uid'].includes(k);
             return isSpecialId ? `*\`${k}=${v}\`*` : `\`${k}=${v}\``;
           }).join('  ') || '_none_'}\n` +
@@ -345,6 +427,28 @@ function buildCard(r: ReturnType<typeof extractFields>, originalText: string = '
       },
     },
   ];
+
+  // Add Salesforce Account Info (always if available)
+  if (salesforceAccount) {
+    blocks.push({
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: formatSalesforceAccount(salesforceAccount)
+      }
+    });
+  }
+
+  // Add License Status (always if available) - Now includes both IaaS and SaaS
+  if (licenseStatus) {
+    blocks.push({
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: formatLicenseStatus(licenseStatus)
+      }
+    });
+  }
 
   // Add UID section if UIDs were found
   if (uids.length > 0) {
@@ -368,7 +472,6 @@ function buildCard(r: ReturnType<typeof extractFields>, originalText: string = '
       }
     });
 
-    // Add UID copy section for easy copying
     if (uids.length > 0) {
       blocks.push({
         type: 'section',
@@ -380,8 +483,30 @@ function buildCard(r: ReturnType<typeof extractFields>, originalText: string = '
     }
   }
 
+  // Add Trace Analysis section
+  const traceAnalysis = getTraceAnalysis(f, channelMapping);
+  const confidenceEmoji = traceAnalysis.confidence === 'high' ? '🎯' : traceAnalysis.confidence === 'medium' ? '⚡' : '🔍';
+  
+  blocks.push({
+    type: 'section',
+    text: {
+      type: 'mrkdwn',
+      text: `*${confidenceEmoji} Trace Analysis (${traceAnalysis.confidence.toUpperCase()} confidence):*\n` +
+            `**Detection:** ${traceAnalysis.detection}\n` +
+            `**Routing:** ${traceAnalysis.routing}\n` +
+            `**Action:** ${traceAnalysis.recommended_action}`
+    }
+  });
+
   if (actions.length > 0) blocks.push({ type: 'actions', elements: actions });
-  blocks.push({ type: 'context', elements: [{ type: 'mrkdwn', text: 'Ephemeral • Enriched with local account data • No channel noise' }] });
+  blocks.push({
+    type: 'context',
+    elements: [{
+      type: 'mrkdwn',
+      text: `Ephemeral • Enriched with ${licenseStatus ? 'licensing + ' : ''}${salesforceAccount ? 'Salesforce + ' : ''}local account data • No channel noise`
+    }]
+  });
+  
   return blocks;
 }
 
@@ -424,7 +549,7 @@ app.command('/log', async ({ command, ack, client }) => {
 
   const fake = `Tenant Name\n${q}`;
   const r = extractFields(fake);
-  const blocks = buildCard(r, fake, command.channel_id);
+  const blocks = await buildCard(r, fake, command.channel_id);
 
   try {
     await client.chat.postEphemeral({
@@ -450,7 +575,7 @@ app.shortcut('loglens_analyze', async ({ shortcut, ack, client }) => {
   const text: string = blocksToText(shortcut.message || {});
   const r = extractFields(text);
   const channelId = (shortcut as any).channel?.id || (shortcut as any).channel?.name;
-  const blocks = buildCard(r, text, channelId);
+  const blocks = await buildCard(r, text, channelId);
 
   try {
     await client.chat.postEphemeral({
