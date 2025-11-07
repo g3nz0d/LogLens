@@ -74,8 +74,8 @@ LogLens-Deployment-Package/
 
 ```bash
 # Clone the LogLens repository
-git clone https://github.com/your-org/loglens.git
-cd loglens
+git clone https://github.com/g3nz0d/LogLens.git
+cd LogLens
 
 # Install dependencies
 npm install
