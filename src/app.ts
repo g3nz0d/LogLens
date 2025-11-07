@@ -427,7 +427,7 @@ async function buildCard(r: ReturnType<typeof extractFields>, originalText: stri
     redashBtn = safeButton('Redash', '#', 'primary');
   }
 
-  const actions = [openLogsBtn, sfBtn, boBtn, zendeskBtn, redashBtn].filter(Boolean) as any[];
+  const actions = [openLogsBtn, redashBtn, sfBtn, boBtn, zendeskBtn].filter(Boolean) as any[];
   console.log('[LogLens] Total buttons created:', actions.length);
 
   // Build header with account tier if available
