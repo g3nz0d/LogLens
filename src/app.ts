@@ -416,15 +416,15 @@ async function buildCard(r: ReturnType<typeof extractFields>, originalText: stri
       if (f.tenant_name) filters.tenant_name = f.tenant_name;
       
       const redashUrl = getRedashDashboardUrl(channelMapping.redash_tenant_dashboard, filters);
-      redashBtn = safeButton('Analytics', redashUrl, 'primary');
+      redashBtn = safeButton('Redash', redashUrl, 'primary');
       console.log('[LogLens] Redash button created for dashboard:', channelMapping.redash_tenant_dashboard);
     } else {
-      redashBtn = safeButton('Analytics', '#', 'primary');
+      redashBtn = safeButton('Redash', '#', 'primary');
       console.log('[LogLens] Redash button created (no dashboard configured)');
     }
   } catch (e) {
     console.error('[LogLens] Redash button error:', e);
-    redashBtn = safeButton('Analytics', '#', 'primary');
+    redashBtn = safeButton('Redash', '#', 'primary');
   }
 
   const actions = [openLogsBtn, sfBtn, boBtn, zendeskBtn, redashBtn].filter(Boolean) as any[];
