@@ -197,11 +197,16 @@ type ChannelMapping = {
   salesforce_account_id?: string;
   backoffice_tenant_path?: string;
   coralogix_team?: string;
+  coralogix_saved_query_url?: string;
   zendesk_organization_id?: string;
   zendesk_organization_name?: string;
   trace_system?: string;
   datadog_org?: string;
   grafana_org?: string;
+  redash_tenant_dashboard?: number;
+  redash_license_query?: number;
+  redash_usage_query?: number;
+  redash_alerts_query?: number;
 };
 
 const splitCSV = (line: string) => line.split(',').map(s => s.trim());
