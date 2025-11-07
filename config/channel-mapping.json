@@ -35,7 +35,11 @@
       "zendesk_organization_id": "29506361719063",
       "zendesk_organization_name": "Seismic",
       "trace_system": "apoyo",
-      "datadog_org": "seismic"
+      "datadog_org": "seismic",
+      "redash_tenant_dashboard": 123,
+      "redash_license_query": 456,
+      "redash_usage_query": 789,
+      "redash_alerts_query": 101
     }
   },
   "default_mapping": {

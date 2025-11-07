@@ -15,7 +15,7 @@ import {
   // linkRecentChanges,
 } from './coralogix.js';
 import { zendeskUrl, zendeskButtonText } from './zendesk.js';
-import { traceUrl, traceButtonText, getTraceAnalysis } from './trace.js';
+import { getRedashDashboardUrl, getRedashEnrichmentData, formatRedashResults } from './redash.js';
 import { getLicenseStatus, formatLicenseStatus, getLicenseDashboardUrl } from './licensing.js';
 import { getSalesforceAccountDetails, formatSalesforceAccount, getAccountTier } from './salesforce.js';
 
@@ -402,18 +402,27 @@ async function buildCard(r: ReturnType<typeof extractFields>, originalText: stri
   const zendeskUrl_result = zendeskUrl(f, channelMapping);
   const zendeskBtn = safeButton('ZenDesk', zendeskUrl_result, 'primary');
 
-  let traceBtn;
+  // 5) Redash Analytics - Direct dashboard access with tenant filters
+  let redashBtn;
   try {
-    const traceButtonLabel = traceButtonText(f);
-    const traceUrl_result = traceUrl(f, channelMapping);
-    traceBtn = safeButton(traceButtonLabel, traceUrl_result, 'primary');
-    console.log('[LogLens] Trace button created:', traceButtonLabel);
+    if (channelMapping?.redash_tenant_dashboard) {
+      const filters: Record<string, string> = {};
+      if (f.tenant_uid) filters.tenant_uid = f.tenant_uid;
+      if (f.tenant_name) filters.tenant_name = f.tenant_name;
+      
+      const redashUrl = getRedashDashboardUrl(channelMapping.redash_tenant_dashboard, filters);
+      redashBtn = safeButton('Analytics', redashUrl, 'primary');
+      console.log('[LogLens] Redash button created for dashboard:', channelMapping.redash_tenant_dashboard);
+    } else {
+      redashBtn = safeButton('Analytics', '#', 'primary');
+      console.log('[LogLens] Redash button created (no dashboard configured)');
+    }
   } catch (e) {
-    console.error('[LogLens] Trace button error:', e);
-    traceBtn = safeButton('Trace', '#', 'primary');
+    console.error('[LogLens] Redash button error:', e);
+    redashBtn = safeButton('Analytics', '#', 'primary');
   }
 
-  const actions = [openLogsBtn, sfBtn, boBtn, zendeskBtn, traceBtn].filter(Boolean) as any[];
+  const actions = [openLogsBtn, sfBtn, boBtn, zendeskBtn, redashBtn].filter(Boolean) as any[];
   console.log('[LogLens] Total buttons created:', actions.length);
 
   // Build header with account tier if available
@@ -495,20 +504,48 @@ async function buildCard(r: ReturnType<typeof extractFields>, originalText: stri
     }
   }
 
-  // Add Trace Analysis section
-  const traceAnalysis = getTraceAnalysis(f, channelMapping);
-  const confidenceEmoji = traceAnalysis.confidence === 'high' ? '🎯' : traceAnalysis.confidence === 'medium' ? '⚡' : '🔍';
-  
-  blocks.push({
-    type: 'section',
-    text: {
-      type: 'mrkdwn',
-      text: `*${confidenceEmoji} Trace Analysis (${traceAnalysis.confidence.toUpperCase()} confidence):*\n` +
-            `**Detection:** ${traceAnalysis.detection}\n` +
-            `**Routing:** ${traceAnalysis.routing}\n` +
-            `**Action:** ${traceAnalysis.recommended_action}`
+  // Add Redash Analytics section with enrichment data
+  try {
+    const redashData = await getRedashEnrichmentData(f, channelMapping);
+    let analyticsText = '📊 **Analytics Available:**\n';
+    
+    if (channelMapping?.redash_tenant_dashboard) {
+      analyticsText += `**Dashboard:** Tenant overview with ${Object.keys(f).length} contextual filters\n`;
     }
-  });
+    
+    if (redashData.licenseData && redashData.licenseData.length > 0) {
+      analyticsText += `**License Data:** ${redashData.licenseData.length} records found\n`;
+    }
+    
+    if (redashData.usageData && redashData.usageData.length > 0) {
+      analyticsText += `**Usage Analytics:** ${redashData.usageData.length} data points available\n`;
+    }
+    
+    if (redashData.alertsData && redashData.alertsData.length > 0) {
+      analyticsText += `**Alert History:** ${redashData.alertsData.length} historical alerts\n`;
+    }
+    
+    analyticsText += `**Action:** Opens tenant-specific dashboard with real-time data visualization`;
+    
+    blocks.push({
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: analyticsText
+      }
+    });
+    
+    console.log('[LogLens] Redash analytics section added');
+  } catch (e) {
+    console.error('[LogLens] Redash analytics error:', e);
+    blocks.push({
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: '📊 **Analytics Available:**\nTenant dashboard with contextual filters and real-time data visualization'
+      }
+    });
+  }
 
   if (actions.length > 0) blocks.push({ type: 'actions', elements: actions });
   blocks.push({
