@@ -1,0 +1,33 @@
+account_uid,tenant_uid,account_name,tenant_name,cloud,region,platform
+# Example entries - replace with your actual account data
+60f1b2c3d4e5f6a7b8c9d0e1,70f1b2c3d4e5f6a7b8c9d0e2,Acme Corporation,Acme Prod,AWS,us-east-1,cyera
+60f1b2c3d4e5f6a7b8c9d0e3,70f1b2c3d4e5f6a7b8c9d0e4,TechCorp Industries,TechCorp Staging,Azure,eastus,cyera
+c670d246-8a9b-472f-badf-4c1ee5c73831,c670d246-8a9b-472f-badf-4c1ee5c73831,Global Dynamics,Global Prod,GCP,us-central1,cyera
+# UUID examples (use either ObjectId format or UUID format consistently)
+a1b2c3d4-e5f6-7890-abcd-ef1234567890,b2c3d4e5-f678-90ab-cdef-123456789012,StartupCo,StartupCo Dev,AWS,us-west-2,cyera
+# Add your organization's accounts and tenants below:
+# [Your account UIDs here],[Your tenant UIDs here],[Account names],[Tenant names],[Cloud provider],[Region],[Platform]
+
+# INSTRUCTIONS:
+# 1. Replace the example entries above with your actual data
+# 2. Each row represents one tenant/account combination
+# 3. UIDs can be either:
+#    - ObjectIds: 24-character hexadecimal (e.g., 60f1b2c3d4e5f6a7b8c9d0e1)
+#    - UUIDs: 8-4-4-4-12 format (e.g., c670d246-8a9b-472f-badf-4c1ee5c73831)
+# 4. This data enriches extracted UIDs with human-readable names
+# 5. Leave fields empty if not applicable (e.g., if account_uid same as tenant_uid)
+
+# COLUMN DESCRIPTIONS:
+# - account_uid: Main account identifier (ObjectId or UUID)
+# - tenant_uid: Tenant identifier (ObjectId or UUID) 
+# - account_name: Human-readable account name (e.g., "Acme Corporation")
+# - tenant_name: Human-readable tenant name (e.g., "Acme Prod", "Acme Staging")
+# - cloud: Cloud provider (AWS, Azure, GCP, etc.)
+# - region: Cloud region (us-east-1, eastus, us-central1, etc.)
+# - platform: Platform type (cyera, custom, etc.)
+
+# TIPS:
+# - Keep account names consistent with Salesforce account names
+# - Use descriptive tenant names that help identify environments
+# - Update this file regularly as new accounts/tenants are added
+# - LogLens automatically reloads this data when the app restarts

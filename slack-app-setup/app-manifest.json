@@ -1,0 +1,50 @@
+{
+  "display_information": {
+    "name": "LogLens",
+    "description": "Analyze alerts and extract UIDs with direct links to logs, Salesforce, and BackOffice systems",
+    "background_color": "#2c3e50",
+    "long_description": "LogLens is a powerful Slack app that automatically analyzes alert messages, extracts tenant and account UIDs, and provides instant access to relevant systems like Coralogix logs, Salesforce records, BackOffice tenants, and ZenDesk tickets. Get enriched account information, licensing status, and one-click navigation to resolve incidents faster."
+  },
+  "features": {
+    "bot_user": {
+      "display_name": "LogLens",
+      "always_online": true
+    },
+    "shortcuts": [
+      {
+        "name": "Analyze with LogLens", 
+        "type": "message",
+        "callback_id": "loglens_analyze",
+        "description": "Extract UIDs and get direct links to logs, Salesforce, and BackOffice"
+      }
+    ],
+    "slash_commands": [
+      {
+        "command": "/log",
+        "description": "Analyze text for tenant/account information and get action buttons",
+        "usage_hint": "[alert text or 'ping' to test]",
+        "should_escape": false
+      }
+    ]
+  },
+  "oauth_config": {
+    "scopes": {
+      "bot": [
+        "commands",
+        "chat:write",
+        "chat:write.public"
+      ]
+    }
+  },
+  "settings": {
+    "event_subscriptions": {
+      "bot_events": []
+    },
+    "interactivity": {
+      "is_enabled": true
+    },
+    "org_deploy_enabled": false,
+    "socket_mode_enabled": true,
+    "token_rotation_enabled": false
+  }
+}

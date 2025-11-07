@@ -1,0 +1,109 @@
+{
+  "channel_mappings": {
+    "C1234567890": {
+      "client_name": "Acme Corporation",
+      "tenant_uid": "60f1b2c3d4e5f6a7b8c9d0e1",
+      "account_uid": "70f1b2c3d4e5f6a7b8c9d0e2", 
+      "salesforce_account_id": "0015500000ABC123",
+      "backoffice_tenant_path": "/app/tenants-60f1b2c3d4e5f6a7b8c9d0e1",
+      "coralogix_team": "acme-prod",
+      "coralogix_saved_query_url": "https://yourorg.coralogix.com/#/query-new/logs?id=abc123&page=0",
+      "zendesk_organization_id": "12345678",
+      "zendesk_organization_name": "Acme Corporation",
+      "trace_system": "datadog",
+      "datadog_org": "acme-corp",
+      "redash_tenant_dashboard": 123,
+      "redash_license_query": 456,
+      "redash_usage_query": 789,
+      "redash_alerts_query": 101
+    },
+    "C2345678901": {
+      "client_name": "TechCorp Industries", 
+      "tenant_uid": "60f1b2c3d4e5f6a7b8c9d0e3",
+      "account_uid": "70f1b2c3d4e5f6a7b8c9d0e4",
+      "salesforce_account_id": "0015500000DEF456",
+      "backoffice_tenant_path": "/app/tenants-60f1b2c3d4e5f6a7b8c9d0e3",
+      "coralogix_team": "techcorp-staging",
+      "zendesk_organization_id": "87654321",
+      "zendesk_organization_name": "TechCorp Industries",
+      "trace_system": "grafana",
+      "grafana_org": "techcorp"
+    },
+    "C3456789012": {
+      "client_name": "Global Dynamics",
+      "tenant_uid": "c670d246-8a9b-472f-badf-4c1ee5c73831",
+      "account_uid": "c670d246-8a9b-472f-badf-4c1ee5c73831",
+      "salesforce_account_id": "0015500000GHI789",
+      "backoffice_tenant_path": "/app/backoffice/single-tenant-abc123?branch=main&tenantId=c670d246-8a9b-472f-badf-4c1ee5c73831&environment=production",
+      "coralogix_team": "global-prod",
+      "zendesk_organization_id": "11223344",
+      "zendesk_organization_name": "Global Dynamics",
+      "trace_system": "apoyo"
+    }
+  },
+  "default_mapping": {
+    "client_name": "Unknown Client",
+    "tenant_uid": null,
+    "account_uid": null,
+    "salesforce_account_id": null,
+    "backoffice_tenant_path": null,
+    "coralogix_team": null,
+    "zendesk_organization_id": null,
+    "zendesk_organization_name": null,
+    "trace_system": null,
+    "datadog_org": null,
+    "grafana_org": null
+  },
+  "_instructions": {
+    "description": "This file maps Slack channels to specific client configurations for targeted routing",
+    "usage": [
+      "1. Find your channel ID by right-clicking channel → View channel details → Copy channel ID",
+      "2. Add an entry in channel_mappings with your channel ID as the key",
+      "3. Fill in the client configuration for that channel",
+      "4. LogLens will use this info to route alerts to the correct systems"
+    ],
+    "required_fields": [
+      "client_name: Human-readable client name (used in UI)",
+      "Channel ID: Slack channel ID (starts with C)"
+    ],
+    "optional_fields": [
+      "tenant_uid: Primary tenant UID for this client",
+      "account_uid: Account UID (if different from tenant_uid)",
+      "salesforce_account_id: Salesforce account ID (15 or 18 characters)",
+      "backoffice_tenant_path: Direct path to tenant in BackOffice",
+      "coralogix_team: Team filter for Coralogix logs",
+      "coralogix_saved_query_url: Pre-built Coralogix query URL",
+      "zendesk_organization_id: ZenDesk org ID for ticket routing",
+      "zendesk_organization_name: ZenDesk org name",
+      "trace_system: Tracing system (datadog, grafana, apoyo)",
+      "datadog_org: DataDog organization slug",
+      "grafana_org: Grafana organization name",
+      "redash_tenant_dashboard: Redash dashboard ID for this tenant",
+      "redash_license_query: Redash query ID for license data",
+      "redash_usage_query: Redash query ID for usage analytics",
+      "redash_alerts_query: Redash query ID for alert history"
+    ],
+    "tips": [
+      "Use consistent client_name values that match your Salesforce accounts",
+      "Keep tenant_uid and account_uid in sync with your accounts.csv file",
+      "Test each channel mapping after adding it",
+      "Use specific backoffice_tenant_path for direct deep linking",
+      "Configure coralogix_saved_query_url for frequently used log searches"
+    ],
+    "example_workflow": [
+      "1. Alert comes into #client-acme-alerts (C1234567890)",
+      "2. LogLens looks up C1234567890 in this mapping",
+      "3. Finds Acme Corporation configuration",
+      "4. Routes Salesforce button to account 0015500000ABC123",
+      "5. Routes BackOffice button to tenant 60f1b2c3d4e5f6a7b8c9d0e1",
+      "6. Routes Coralogix to team acme-prod filter",
+      "7. Routes ZenDesk to organization 12345678"
+    ]
+  },
+  "_how_to_get_channel_ids": {
+    "method1": "Right-click channel name → View channel details → Copy channel ID",
+    "method2": "In Slack app, go to channel → Settings → Additional Options → Copy Link → Extract ID from URL",
+    "method3": "Use Slack API: channels.list or conversations.list",
+    "format": "Channel IDs start with 'C' followed by 10+ alphanumeric characters (e.g., C1234567890)"
+  }
+}
