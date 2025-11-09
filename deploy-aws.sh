@@ -44,9 +44,9 @@ EOF
 echo "🔐 Setting Slack tokens (you'll need to provide these)..."
 echo "Please run these commands to set your Slack tokens:"
 echo ""
-echo "eb setenv SLACK_BOT_TOKEN=\"xoxb-9214793939475-9666595789445-yty8DzHS2Zj9UCLgZTb6vAxv\""
-echo "eb setenv SLACK_APP_TOKEN=\"xapp-1-A09KHDA8APM-9666495986117-22f056a0d1aa2c0c828ecc19160b3e8416f9634cabd3a14980db623a04d54a20\""
-echo "eb setenv SLACK_SIGNING_SECRET=\"358c83b58333046c887a0e30549b312d\""
+echo "eb setenv SLACK_BOT_TOKEN=\"\""
+echo "eb setenv SLACK_APP_TOKEN=\"xapp-1-""
+echo "eb setenv SLACK_SIGNING_SECRET=\"\""
 echo ""
 read -p "Press Enter after running the above commands..."
 
