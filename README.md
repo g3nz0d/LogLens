@@ -159,8 +159,8 @@ See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed deployment instructions includ
 | `SLACK_APP_TOKEN` | App-Level Token | `xapp-...` |
 | `SLACK_SIGNING_SECRET` | Signing Secret | `abc123...` |
 | `CORALOGIX_BASE_URL` | Coralogix instance URL | `https://app.coralogix.com` |
-| `SALESFORCE_OPP_URL` | Salesforce opportunities URL | `https://cyera.lightning.force.com/...` |
-| `BACKOFFICE_BASE_URL` | BackOffice base URL | `https://smithy.internal.cyera.io` |
+| `SALESFORCE_OPP_URL` | Salesforce opportunities URL | `https://loglens.lightning.force.com/...` |
+| `BACKOFFICE_BASE_URL` | BackOffice base URL | `https://smithy.internal.loglens.io` |
 | `ACCOUNT_INDEX_PATH` | Path to accounts CSV | `./config/accounts.csv` |
 
 ## 🐛 Troubleshooting
